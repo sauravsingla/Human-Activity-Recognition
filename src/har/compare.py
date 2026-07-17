@@ -22,6 +22,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--validation-fraction", type=float, default=0.15)
+    parser.add_argument(
+        "--validation-mode", choices=("window", "subject"), default="window"
+    )
     parser.add_argument("--patience", type=int, default=5)
     parser.add_argument("--output-dir", type=Path, default=Path("artifacts"))
     return parser.parse_args()
@@ -31,6 +34,7 @@ def _write_summary(output_dir: Path, results: list[dict]) -> None:
     columns = (
         "model",
         "configuration",
+        "validation_mode",
         "test_accuracy",
         "macro_precision",
         "macro_recall",
@@ -77,6 +81,7 @@ def main() -> None:
                 batch_size=args.batch_size,
                 seed=args.seed,
                 validation_fraction=args.validation_fraction,
+                validation_mode=args.validation_mode,
                 patience=args.patience,
                 output_dir=args.output_dir,
             )
