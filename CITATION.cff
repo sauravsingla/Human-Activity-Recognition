@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "Please cite the associated paper when using this software."
+title: "Human Activity Recognition: CNN, LSTM-RNN and GRU-RNN Comparison"
+type: software
+authors:
+  - family-names: Singla
+    given-names: Saurav
+  - family-names: Patel
+    given-names: Anjali
+repository-code: "https://github.com/sauravsingla/Human-Activity-Recognition"
+preferred-citation:
+  type: article
+  title: "Comparative Study of the Deep Learning Neural Networks on the basis of the Human Activity Recognition"
+  authors:
+    - family-names: Singla
+      given-names: Saurav
+    - family-names: Patel
+      given-names: Anjali
+  journal: "International Journal of Computer Sciences and Engineering"
+  volume: 8
+  issue: 11
+  start: 27
+  end: 32
+  year: 2020
+  doi: "10.26438/ijcse/v8i11.2732"
