@@ -2,12 +2,22 @@ cff-version: 1.2.0
 message: "Please cite the associated paper when using this software."
 title: "Human Activity Recognition: CNN, LSTM-RNN and GRU-RNN Comparison"
 type: software
+version: 1.0.0
+date-released: 2026-07-17
+license: MIT
+repository-code: "https://github.com/sauravsingla/Human-Activity-Recognition"
+keywords:
+  - human activity recognition
+  - deep learning
+  - convolutional neural network
+  - long short-term memory
+  - gated recurrent unit
+  - UCI HAR
 authors:
   - family-names: Singla
     given-names: Saurav
   - family-names: Patel
     given-names: Anjali
-repository-code: "https://github.com/sauravsingla/Human-Activity-Recognition"
 preferred-citation:
   type: article
   title: "Comparative Study of the Deep Learning Neural Networks on the basis of the Human Activity Recognition"
