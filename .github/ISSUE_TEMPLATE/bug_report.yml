@@ -1,0 +1,61 @@
+name: Bug report
+description: Report a reproducible problem in code, tests, packaging, or documentation
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for helping improve the repository. Do not attach private datasets, credentials, or sensitive sensor data.
+  - type: textarea
+    id: description
+    attributes:
+      label: Problem description
+      description: Describe what happened and what you expected.
+    validations:
+      required: true
+  - type: dropdown
+    id: configuration
+    attributes:
+      label: Model configuration
+      options:
+        - paper
+        - modern
+        - not applicable
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include the exact command and a minimal error trace.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: 3.11.9
+    validations:
+      required: true
+  - type: input
+    id: tensorflow
+    attributes:
+      label: TensorFlow version
+      placeholder: 2.16.2 or not installed
+  - type: textarea
+    id: environment
+    attributes:
+      label: Operating system and hardware
+      description: Include OS, CPU/GPU, and relevant dependency details.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: I removed private data, secrets, and credentials.
+          required: true
+        - label: I am not presenting an unverified result as a paper reproduction.
+          required: true
