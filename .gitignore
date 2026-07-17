@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+artifacts/
+*.keras
+*.h5
+UCI HAR Dataset/
+UCI HAR Dataset.zip
+.DS_Store
