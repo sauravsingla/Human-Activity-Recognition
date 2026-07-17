@@ -4,10 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "human-activity-recognition"
-version = "0.1.0"
-description = "Paper-aligned deep-learning baselines for the UCI HAR Dataset"
+version = "1.0.0"
+description = "Reproducible CNN, LSTM, and GRU experiments for the Singla-Patel HAR paper"
 readme = "README.md"
 requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+  {name = "Saurav Singla"},
+  {name = "Anjali Patel"},
+]
+keywords = [
+  "human activity recognition",
+  "deep learning",
+  "CNN",
+  "LSTM",
+  "GRU",
+  "UCI HAR",
+]
 dependencies = [
   "numpy>=1.24,<3",
 ]
@@ -20,6 +33,14 @@ train = [
 test = [
   "pytest>=8,<9",
 ]
+
+[project.scripts]
+har-train = "har.train:main"
+har-compare = "har.compare:main"
+
+[project.urls]
+Repository = "https://github.com/sauravsingla/Human-Activity-Recognition"
+Paper = "https://doi.org/10.26438/ijcse/v8i11.2732"
 
 [tool.setuptools.packages.find]
 where = ["src"]
