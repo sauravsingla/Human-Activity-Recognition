@@ -23,6 +23,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--validation-fraction", type=float, default=0.15)
+    parser.add_argument(
+        "--validation-mode",
+        choices=("window", "subject"),
+        default="window",
+        help="Use historical window validation or stricter subject-disjoint validation.",
+    )
     parser.add_argument("--patience", type=int, default=5)
     parser.add_argument("--output-dir", type=Path, default=Path("artifacts"))
     return parser.parse_args()
@@ -39,6 +45,7 @@ def main() -> None:
             batch_size=args.batch_size,
             seed=args.seed,
             validation_fraction=args.validation_fraction,
+            validation_mode=args.validation_mode,
             patience=args.patience,
             output_dir=args.output_dir,
         )
@@ -48,6 +55,7 @@ def main() -> None:
             {
                 "model": metrics["model"],
                 "configuration": metrics["configuration"],
+                "validation_mode": metrics["validation_mode"],
                 "test_loss": metrics["test_loss"],
                 "test_accuracy": metrics["test_accuracy"],
                 "macro_f1": metrics["macro_f1"],
