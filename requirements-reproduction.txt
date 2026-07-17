@@ -1,0 +1,6 @@
+# Reference CPU environment for reproducible paper-comparison runs.
+# Install the package itself first with: pip install -e .
+numpy==1.26.4
+scikit-learn==1.5.2
+tensorflow==2.16.2
+pytest==8.3.5
