@@ -8,12 +8,14 @@ import sys
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 
 from .data import ACTIVITIES, load_split, standardize
 from .models import ModelConfiguration, ModelName, build_model
+
+ValidationMode = Literal["window", "subject"]
 
 
 @dataclass(frozen=True)
@@ -25,6 +27,7 @@ class ExperimentConfig:
     batch_size: int = 16
     seed: int = 42
     validation_fraction: float = 0.15
+    validation_mode: ValidationMode = "window"
     patience: int = 5
     output_dir: Path = Path("artifacts")
 
@@ -35,6 +38,8 @@ class ExperimentConfig:
             raise ValueError("batch_size must be positive")
         if not 0.0 < self.validation_fraction < 1.0:
             raise ValueError("validation_fraction must be between 0 and 1")
+        if self.validation_mode not in {"window", "subject"}:
+            raise ValueError("validation_mode must be 'window' or 'subject'")
         if self.patience < 0:
             raise ValueError("patience cannot be negative")
 
@@ -51,10 +56,23 @@ def set_reproducible_seed(seed: int):
     try:
         tf.config.experimental.enable_op_determinism()
     except (AttributeError, RuntimeError):
-        # Older TensorFlow builds or an already-initialized runtime may not
-        # expose/allow deterministic-op configuration.
         pass
     return tf
+
+
+def subject_validation_masks(
+    subjects: np.ndarray, fraction: float
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Create deterministic train/validation masks using complete subjects."""
+    unique_subjects = np.unique(subjects)
+    if unique_subjects.size < 2:
+        raise ValueError("Subject validation requires at least two training subjects")
+    validation_count = max(1, int(np.ceil(unique_subjects.size * fraction)))
+    validation_count = min(validation_count, unique_subjects.size - 1)
+    validation_subjects = unique_subjects[-validation_count:]
+    validation_mask = np.isin(subjects, validation_subjects)
+    training_mask = ~validation_mask
+    return training_mask, validation_mask, validation_subjects
 
 
 def _json_safe(value: Any) -> Any:
@@ -96,16 +114,34 @@ def run_experiment(config: ExperimentConfig) -> dict[str, Any]:
             )
         )
 
+    fit_kwargs: dict[str, Any] = {}
+    validation_subjects: list[int] = []
+    fit_x = x_train
+    fit_y = train.labels
+    if config.validation_mode == "subject":
+        train_mask, validation_mask, held_out = subject_validation_masks(
+            train.subjects, config.validation_fraction
+        )
+        fit_x = x_train[train_mask]
+        fit_y = train.labels[train_mask]
+        fit_kwargs["validation_data"] = (
+            x_train[validation_mask],
+            train.labels[validation_mask],
+        )
+        validation_subjects = [int(value) for value in held_out]
+    else:
+        fit_kwargs["validation_split"] = config.validation_fraction
+
     started = time.perf_counter()
     history = model.fit(
-        x_train,
-        train.labels,
-        validation_split=config.validation_fraction,
+        fit_x,
+        fit_y,
         epochs=config.epochs,
         batch_size=config.batch_size,
         callbacks=callbacks,
         verbose=2,
         shuffle=True,
+        **fit_kwargs,
     )
     training_seconds = time.perf_counter() - started
 
@@ -158,6 +194,9 @@ def run_experiment(config: ExperimentConfig) -> dict[str, Any]:
         "batch_size": config.batch_size,
         "seed": config.seed,
         "validation_fraction": config.validation_fraction,
+        "validation_mode": config.validation_mode,
+        "validation_subjects": validation_subjects,
+        "fit_samples": int(fit_y.size),
         "train_samples": int(train.labels.size),
         "test_samples": int(test.labels.size),
         "train_subjects": int(np.unique(train.subjects).size),
